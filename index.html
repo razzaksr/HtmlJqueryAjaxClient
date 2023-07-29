@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX CRUDL Client</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script>
+        $(document).ready(()=>{
+            $("#save").click((eve)=>{
+                var name=$("input[name=studname]").val()
+                var sslc=$("input[name=studsslcmark]").val()
+                var hsc=$("input[name=studhscmark]").val()
+                var city=$("input[name=studcity]").val()
+                sslc=parseInt(sslc)
+                hsc=parseInt(hsc)
+                alert(typeof(name)+" "+typeof(sslc)+" "+typeof(hsc)+" "+typeof(city))
+
+                const myData={
+                    "studname":name,
+                    "studcity":city,
+                    "studsslcmark":sslc,
+                    "studhscmark":hsc,
+                }
+
+                alert(JSON.stringify(myData))
+
+                eve.preventDefault()
+
+                $.ajax({
+					type: "POST",
+                    dataType:"text",
+					contentType: "application/json;charset=utf-8",
+					url: "http://192.168.29.14:8082/studentdet/newstudentdetails",
+					data: JSON.stringify(myData),
+                    success:function(data){
+                        $("#info").text("success")
+                    },
+                    error:(err)=>{
+                        $("#info").text("failure")
+                    }
+				});
+
+                /*$.post("http://192.168.29.14:8082/studentdet/newstudentdetails",{
+                    "studname":name,
+                    "studcity":city,
+                    "studsslcmark":sslc,
+                    "studhscmark":hsc,
+                },(data)=>{
+                    alert(data)
+                }) */
+            })
+            $("table").mouseenter(()=>{
+                $.get("http://192.168.29.14:8082/studentdet/",(data)=>{
+                    data.map((d)=>{
+                        $("#view").append(
+                            "<tr><td>"+d.studname+"</td><td>"+d.studhscmark+"</td><td>"+d.studcity+"</td><td>"+d.studsslcmark+"</td></tr>"
+                        )
+                    })
+                })
+            })
+            $("table").mouseleave(()=>{
+                $("#view").html("")
+            })
+        })
+    </script>
+</head>
+<body>
+    <table border="4px">
+        <thead>
+            <tr>
+                <th>Name</th><th>HSC Mark</th><th>City</th><th>SSLC Mark</th>
+            </tr>
+        </thead>
+        <tbody id="view">
+            
+        </tbody>
+    </table>
+    <form name="insert">
+        <input type="text" name="studname" />
+        <input type="text" name="studhscmark" />
+        <input type="text" name="studsslcmark" />
+        <input type="text" name="studcity" />
+        <button id="save">
+            Add
+        </button>
+    </form>
+    <p id="info"></p>
+</body>
+</html>
